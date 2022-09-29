@@ -5,13 +5,11 @@ import (
 	"math/big"
 
 	"golang.org/x/crypto/bcrypt"
-
-	"github.com/e-zhydzetski/faraway-tt/internal/domain"
 )
 
 const cost = 10
 
-func NewPOWCheck(complexity uint64) (domain.POWCheck, error) {
+func NewPOWCheck(complexity uint64) (POWCheck, error) {
 	r, err := rand.Int(rand.Reader, big.NewInt(int64(complexity)))
 	if err != nil {
 		return POWCheck{}, err
