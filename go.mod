@@ -2,7 +2,10 @@ module github.com/e-zhydzetski/faraway-tt
 
 go 1.19
 
-require github.com/stretchr/testify v1.8.0
+require (
+	github.com/stretchr/testify v1.8.0
+	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
