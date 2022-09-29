@@ -1,7 +1,6 @@
 package bcrypt
 
 import (
-	"math/big"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,13 +14,6 @@ func TestPOWCheck(t *testing.T) {
 	require.NoError(t, err)
 	t.Log(string(check.Input()))
 
-	var x uint64
-	for {
-		err := bcrypt.CompareHashAndPassword(check.Input(), big.NewInt(int64(x)).Bytes())
-		if err == nil {
-			break
-		}
-		x++
-	}
+	x := Solve(check.Input())
 	require.True(t, check.Check(x))
 }
