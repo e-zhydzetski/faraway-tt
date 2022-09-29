@@ -3,6 +3,7 @@ package quotable
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -31,6 +32,9 @@ func (c Client) Quote(ctx context.Context) (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("status %d", resp.StatusCode)
+	}
 
 	var body struct {
 		Content string `json:"content"`
