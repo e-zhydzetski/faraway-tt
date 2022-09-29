@@ -1,4 +1,4 @@
-package bcrypt
+package pow
 
 import (
 	"crypto/rand"
@@ -9,37 +9,35 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const cost = 10
-
-func NewPOWCheck(complexity uint64) (domain.POWCheck, error) {
+func NewBCryptCheck(complexity uint64) (domain.POWCheck, error) {
 	r, err := rand.Int(rand.Reader, big.NewInt(int64(complexity)))
 	if err != nil {
-		return POWCheck{}, err
+		return BCryptCheck{}, err
 	}
-	digest, err := bcrypt.GenerateFromPassword(r.Bytes(), cost)
+	digest, err := bcrypt.GenerateFromPassword(r.Bytes(), bcrypt.DefaultCost)
 	if err != nil {
-		return POWCheck{}, err
+		return BCryptCheck{}, err
 	}
-	return POWCheck{
+	return BCryptCheck{
 		answer: r.Uint64(),
 		digest: digest,
 	}, nil
 }
 
-type POWCheck struct {
+type BCryptCheck struct {
 	answer uint64
 	digest []byte
 }
 
-func (p POWCheck) Input() []byte {
-	return p.digest
+func (b BCryptCheck) Input() []byte {
+	return b.digest
 }
 
-func (p POWCheck) Check(answer uint64) bool {
-	return p.answer == answer
+func (b BCryptCheck) Check(answer uint64) bool {
+	return b.answer == answer
 }
 
-func Solve(input []byte) uint64 {
+func BCryptSolve(input []byte) uint64 {
 	var x uint64
 	for {
 		err := bcrypt.CompareHashAndPassword(input, big.NewInt(int64(x)).Bytes())

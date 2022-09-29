@@ -1,4 +1,4 @@
-package bcrypt
+package pow
 
 import (
 	"testing"
@@ -7,13 +7,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func TestPOWCheck(t *testing.T) {
-	check, err := NewPOWCheck(10)
+func TestBCryptPOWCheck(t *testing.T) {
+	check, err := NewBCryptCheck(10)
 	require.NoError(t, err)
 	_, err = bcrypt.Cost(check.Input())
 	require.NoError(t, err)
 	t.Log(string(check.Input()))
 
-	x := Solve(check.Input())
+	x := BCryptSolve(check.Input())
 	require.True(t, check.Check(x))
 }
