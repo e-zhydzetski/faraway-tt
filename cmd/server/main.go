@@ -24,6 +24,8 @@ func main() {
 
 	handler := domain.NewHandler(powCheckFactory, quoterService)
 
-	err := tcp.ListenAndServe(ctx, ":7777", handler)
+	err := tcp.ListenAndServe(ctx, ":7777", func(ctx context.Context, c *tcp.Connection) error {
+		return handler.Handle(ctx, c)
+	})
 	log.Println(err)
 }

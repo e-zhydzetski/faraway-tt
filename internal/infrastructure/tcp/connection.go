@@ -1,7 +1,6 @@
 package tcp
 
 import (
-	"context"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -73,26 +72,4 @@ func (c *Connection) ReadString() (string, error) {
 		return "", err
 	}
 	return string(b), nil
-}
-
-// Business level methods for server
-
-func (c *Connection) POWVerification(_ context.Context, challenge []byte) (uint64, error) {
-	err := c.WriteBytes(challenge)
-	if err != nil {
-		return 0, err
-	}
-	proof, err := c.ReadUint64()
-	return proof, err
-}
-
-func (c *Connection) SendQuote(_ context.Context, quote string) error {
-	return c.WriteString(quote)
-}
-
-func (c *Connection) ReportError(err error) {
-	if err == nil {
-		return
-	}
-	_ = c.WriteString(err.Error())
 }

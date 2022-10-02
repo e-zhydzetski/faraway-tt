@@ -4,20 +4,18 @@ import (
 	"context"
 	"log"
 	"net"
-
-	"github.com/e-zhydzetski/faraway-tt/internal/domain"
 )
 
-type Handler func(ctx context.Context, c *Connection)
+type Handler func(ctx context.Context, c *Connection) error
 
-func ListenAndServe(ctx context.Context, addr string, handler domain.Handler) error {
+func ListenAndServe(ctx context.Context, addr string, handler Handler) error {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
 	go func() {
 		<-ctx.Done()
-		l.Close()
+		_ = l.Close()
 	}()
 	for {
 		conn, err := l.Accept()
@@ -28,12 +26,12 @@ func ListenAndServe(ctx context.Context, addr string, handler domain.Handler) er
 	}
 }
 
-func handleConnection(ctx context.Context, conn net.Conn, handler domain.Handler) {
+func handleConnection(ctx context.Context, conn net.Conn, handler Handler) {
 	defer conn.Close()
 	c := NewConnection(conn)
-	err := handler.Handle(ctx, c)
+	err := handler(ctx, c)
 	if err != nil {
 		log.Println(err)
-		c.ReportError(err)
+		_ = c.WriteString("ERROR: " + err.Error())
 	}
 }

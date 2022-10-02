@@ -14,6 +14,7 @@ type POWCheck interface {
 }
 
 type Client interface {
-	POWVerification(ctx context.Context, input []byte) (uint64, error)
-	SendQuote(ctx context.Context, quote string) error
+	WriteBytes(data []byte) error
+	ReadUint64() (uint64, error)
+	WriteString(data string) error
 }

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"log"
-	"net"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
@@ -11,17 +13,17 @@ import (
 )
 
 func errorAwareMain() error {
-	tcpAddr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:7777")
-	if err != nil {
-		return err
-	}
-	conn, err := net.DialTCP("tcp", nil, tcpAddr)
-	if err != nil {
-		return err
-	}
-	connection := tcp.NewConnection(conn)
+	ctx := context.Background()
 
-	powChallenge, err := connection.ReadBytes()
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
+	defer stop()
+
+	conn, err := tcp.Connect(ctx, "127.0.0.1:7777")
+	if err != nil {
+		return err
+	}
+
+	powChallenge, err := conn.ReadBytes()
 	if err != nil {
 		return err
 	}
@@ -31,12 +33,12 @@ func errorAwareMain() error {
 	duration := time.Since(before)
 	log.Println("POW check duration:", duration)
 
-	err = connection.WriteUint64(proof)
+	err = conn.WriteUint64(proof)
 	if err != nil {
 		return err
 	}
 
-	quote, err := connection.ReadString()
+	quote, err := conn.ReadString()
 	if err != nil {
 		return err
 	}
