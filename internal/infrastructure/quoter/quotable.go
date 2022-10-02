@@ -8,21 +8,19 @@ import (
 	"time"
 )
 
-func NewQuotableClient() Client {
-	return Client{}
+func NewQuotableClient() QuotableClient {
+	return QuotableClient{}
 }
 
-const addr = "https://api.quotable.io"
-
-type Client struct {
+type QuotableClient struct {
 }
 
-func (c Client) Quote(ctx context.Context) (string, error) {
+func (q QuotableClient) Quote(ctx context.Context) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	// TODO make tags configurable
-	req, err := http.NewRequest(http.MethodGet, addr+"/random?tags=wisdom", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.quotable.io/random?tags=wisdom", nil)
 	if err != nil {
 		return "", err
 	}

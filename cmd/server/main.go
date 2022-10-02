@@ -20,9 +20,9 @@ func main() {
 	defer stop()
 
 	powCheckFactory := pow.NewBCryptCheck
-	quoter := quoter.NewQuotableClient()
+	quoterService := quoter.NewQuotableClient()
 
-	handler := domain.NewHandler(powCheckFactory, quoter)
+	handler := domain.NewHandler(powCheckFactory, quoterService)
 
 	err := tcp.ListenAndServe(ctx, ":7777", handler)
 	log.Println(err)
