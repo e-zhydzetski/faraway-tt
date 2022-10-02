@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/binary"
 	"log"
 	"net"
 	"time"
+
+	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
 
 	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/pow"
 )
@@ -18,32 +19,29 @@ func errorAwareMain() error {
 	if err != nil {
 		return err
 	}
+	connection := tcp.NewConnection(conn)
 
-	buff := make([]byte, 1024)
-
-	n, err := conn.Read(buff)
+	powChallenge, err := connection.ReadBytes()
 	if err != nil {
 		return err
 	}
-	powInput := buff[:n]
 
 	before := time.Now()
-	proof := pow.BCryptProve(powInput)
+	proof := pow.BCryptProve(powChallenge)
 	duration := time.Since(before)
 	log.Println("POW check duration:", duration)
 
-	binary.BigEndian.PutUint64(buff, proof)
-	_, err = conn.Write(buff[:8])
+	err = connection.WriteUint64(proof)
 	if err != nil {
 		return err
 	}
 
-	n, err = conn.Read(buff)
+	quote, err := connection.ReadString()
 	if err != nil {
 		return err
 	}
-	quote := buff[:n]
-	log.Println("Quote:", string(quote))
+	log.Println("Quote:", quote)
+
 	return nil
 }
 
