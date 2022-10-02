@@ -6,4 +6,8 @@ tasks:
       - golangci-lint.exe run --fix
   test:
     cmds:
-      - go test ./...
+      - go test ./... -coverprofile cover.out
+  coverage:
+    deps: [test]
+    cmds:
+      - go tool cover -func cover.out
