@@ -3,10 +3,12 @@ package tcp_test
 import (
 	"context"
 	"fmt"
-	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
 )
 
 func TestConnection(t *testing.T) {
