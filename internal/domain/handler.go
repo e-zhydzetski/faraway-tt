@@ -22,11 +22,11 @@ func (h Handler) Handle(ctx context.Context, client Client) error {
 	if err != nil {
 		return err
 	}
-	answer, err := client.POWVerification(ctx, powCheck.Input())
+	proof, err := client.POWVerification(ctx, powCheck.Challenge())
 	if err != nil {
 		return err
 	}
-	if !powCheck.Check(answer) {
+	if !powCheck.Verify(proof) {
 		return errors.New("verification error")
 	}
 	quote, err := h.quoter.Quote(ctx)

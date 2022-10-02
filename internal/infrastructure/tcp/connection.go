@@ -19,12 +19,12 @@ func (c *Connection) POWVerification(ctx context.Context, input []byte) (uint64,
 	if err != nil {
 		return 0, err
 	}
-	answerBytes := make([]byte, 8) // uint64
-	_, err = c.conn.Read(answerBytes)
+	proofBytes := make([]byte, 8) // uint64
+	_, err = c.conn.Read(proofBytes)
 	if err != nil {
 		return 0, err
 	}
-	return binary.BigEndian.Uint64(answerBytes), nil
+	return binary.BigEndian.Uint64(proofBytes), nil
 }
 
 func (c *Connection) SendQuote(ctx context.Context, quote string) error {

@@ -10,10 +10,10 @@ import (
 func TestBCryptPOWCheck(t *testing.T) {
 	check, err := NewBCryptCheck(10)
 	require.NoError(t, err)
-	_, err = bcrypt.Cost(check.Input())
+	_, err = bcrypt.Cost(check.Challenge())
 	require.NoError(t, err)
-	t.Log(string(check.Input()))
+	t.Log(string(check.Challenge()))
 
-	x := BCryptSolve(check.Input())
-	require.True(t, check.Check(x))
+	x := BCryptProve(check.Challenge())
+	require.True(t, check.Verify(x))
 }

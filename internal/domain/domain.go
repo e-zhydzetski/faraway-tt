@@ -9,8 +9,8 @@ type Quoter interface {
 type POWCheckFactoryFunc func(complexity uint64) (POWCheck, error)
 
 type POWCheck interface {
-	Input() []byte
-	Check(answer uint64) bool
+	Challenge() []byte
+	Verify(proof uint64) bool
 }
 
 type Client interface {

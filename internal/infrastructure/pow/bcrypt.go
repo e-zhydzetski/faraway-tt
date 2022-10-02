@@ -29,15 +29,15 @@ type BCryptCheck struct {
 	digest []byte
 }
 
-func (b BCryptCheck) Input() []byte {
+func (b BCryptCheck) Challenge() []byte {
 	return b.digest
 }
 
-func (b BCryptCheck) Check(answer uint64) bool {
-	return b.answer == answer
+func (b BCryptCheck) Verify(proof uint64) bool {
+	return b.answer == proof
 }
 
-func BCryptSolve(input []byte) uint64 {
+func BCryptProve(input []byte) uint64 {
 	var x uint64
 	for {
 		err := bcrypt.CompareHashAndPassword(input, big.NewInt(int64(x)).Bytes())

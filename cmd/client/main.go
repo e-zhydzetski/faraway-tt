@@ -28,11 +28,11 @@ func errorAwareMain() error {
 	powInput := buff[:n]
 
 	before := time.Now()
-	answer := pow.BCryptSolve(powInput)
+	proof := pow.BCryptProve(powInput)
 	duration := time.Since(before)
 	log.Println("POW check duration:", duration)
 
-	binary.BigEndian.PutUint64(buff, answer)
+	binary.BigEndian.PutUint64(buff, proof)
 	_, err = conn.Write(buff[:8])
 	if err != nil {
 		return err
