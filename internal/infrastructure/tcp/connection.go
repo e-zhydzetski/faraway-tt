@@ -73,3 +73,7 @@ func (c *Connection) ReadString() (string, error) {
 	}
 	return string(b), nil
 }
+
+func (c *Connection) Close() error {
+	return c.conn.Close()
+}

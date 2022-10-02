@@ -13,7 +13,7 @@ import (
 	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
 )
 
-func main() {
+func errorAwareMain() error {
 	ctx := context.Background()
 
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
@@ -24,8 +24,20 @@ func main() {
 
 	handler := domain.NewHandler(powCheckFactory, quoterService)
 
-	err := tcp.ListenAndServe(ctx, ":7777", func(ctx context.Context, c *tcp.Connection) error {
+	server, err := tcp.StartServer(ctx, ":7777", func(ctx context.Context, c *tcp.Connection) error {
 		return handler.Handle(ctx, c)
 	})
-	log.Println(err)
+	if err != nil {
+		return err
+	}
+	log.Printf("TCP server listenting on port: %d", server.Port())
+
+	return server.WaitForShutdown()
+}
+
+func main() {
+	err := errorAwareMain()
+	if err != nil {
+		log.Println(err)
+	}
 }

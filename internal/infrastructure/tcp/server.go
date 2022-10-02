@@ -4,34 +4,61 @@ import (
 	"context"
 	"log"
 	"net"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type Handler func(ctx context.Context, c *Connection) error
 
-func ListenAndServe(ctx context.Context, addr string, handler Handler) error {
-	l, err := net.Listen("tcp", addr)
+func StartServer(ctx context.Context, addr string, handler Handler) (*Server, error) {
+	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	go func() {
+	g, ctx := errgroup.WithContext(ctx)
+	g.Go(func() error {
 		<-ctx.Done()
-		_ = l.Close()
-	}()
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			return err
+		_ = ln.Close()
+		return ctx.Err()
+	})
+	g.Go(func() error {
+		for {
+			conn, err := ln.Accept()
+			if err != nil {
+				if ne, ok := err.(net.Error); ok && ne.Timeout() {
+					log.Printf("accept tmp error: %v", err)
+					continue
+				}
+				return err
+			}
+			g.Go(func() error { // start inside errgroup to wait all in-fly connections after shutdown
+				defer conn.Close()
+				c := NewConnection(conn)
+				// TODO maybe use another context for in-fly requests
+				err := handler(ctx, c)
+				if err != nil {
+					log.Println(err)
+					_ = c.WriteString("ERROR: " + err.Error())
+				}
+				return nil // always return nil to prevent server stop because of connection handling error
+			})
 		}
-		go handleConnection(ctx, conn, handler)
-	}
+	})
+	return &Server{
+		addr:     ln.Addr().(*net.TCPAddr),
+		errGroup: g,
+	}, nil
 }
 
-func handleConnection(ctx context.Context, conn net.Conn, handler Handler) {
-	defer conn.Close()
-	c := NewConnection(conn)
-	err := handler(ctx, c)
-	if err != nil {
-		log.Println(err)
-		_ = c.WriteString("ERROR: " + err.Error())
-	}
+type Server struct {
+	addr     *net.TCPAddr
+	errGroup *errgroup.Group
+}
+
+func (s *Server) Port() int {
+	return s.addr.Port
+}
+
+func (s *Server) WaitForShutdown() error {
+	return s.errGroup.Wait()
 }
