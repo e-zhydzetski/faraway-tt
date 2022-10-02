@@ -1,4 +1,4 @@
-package quotable
+package quoter
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func NewClient() Client {
+func NewQuotableClient() Client {
 	return Client{}
 }
 
@@ -18,7 +18,7 @@ type Client struct {
 }
 
 func (c Client) Quote(ctx context.Context) (string, error) {
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	// TODO make tags configurable

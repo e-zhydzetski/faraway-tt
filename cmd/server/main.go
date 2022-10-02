@@ -6,10 +6,10 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/quoter"
+
 	"github.com/e-zhydzetski/faraway-tt/internal/domain"
 	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/pow"
-	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/quotable"
-
 	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
 )
 
@@ -20,7 +20,7 @@ func main() {
 	defer stop()
 
 	powCheckFactory := pow.NewBCryptCheck
-	quoter := quotable.NewClient()
+	quoter := quoter.NewQuotableClient()
 
 	handler := domain.NewHandler(powCheckFactory, quoter)
 
