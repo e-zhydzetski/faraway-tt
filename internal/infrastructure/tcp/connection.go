@@ -45,12 +45,16 @@ func (c *Connection) WriteBytes(data []byte) error {
 	return err
 }
 
+const maxBufferSize = 4096
+
 func (c *Connection) ReadBytes() ([]byte, error) {
 	l, err := c.ReadUint64()
 	if err != nil {
 		return nil, err
 	}
-	// TODO check max len and use buffer
+	if l > maxBufferSize {
+		return nil, fmt.Errorf("read bytes error: max buffer size exceeded: max %d, cur %d", maxBufferSize, l)
+	}
 	b := make([]byte, l)
 	n, err := c.conn.Read(b)
 	if err != nil {
