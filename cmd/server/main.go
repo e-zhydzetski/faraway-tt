@@ -37,10 +37,10 @@ func errorAwareMain() error {
 	powCheckFactory := pow.NewBCryptCheck
 	quoterService := quoter.NewQuotableClient()
 
-	handler := domain.NewHandler(powCheckFactory, quoterService, difficulty)
+	service := domain.NewService(powCheckFactory, quoterService, difficulty)
 
 	server, err := tcp.StartServer(ctx, listenAddr, func(ctx context.Context, c *tcp.Connection) error {
-		return handler.Handle(ctx, c)
+		return service.ServeClient(ctx, c)
 	})
 	if err != nil {
 		return err

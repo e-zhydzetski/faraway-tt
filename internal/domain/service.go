@@ -5,21 +5,21 @@ import (
 	"errors"
 )
 
-func NewHandler(powCheckFactory POWCheckFactoryFunc, quoter Quoter, difficulty uint64) Handler {
-	return Handler{
+func NewService(powCheckFactory POWCheckFactoryFunc, quoter Quoter, difficulty uint64) Service {
+	return Service{
 		powCheckFactory: powCheckFactory,
 		quoter:          quoter,
 		difficulty:      difficulty,
 	}
 }
 
-type Handler struct {
+type Service struct {
 	powCheckFactory POWCheckFactoryFunc
 	quoter          Quoter
 	difficulty      uint64
 }
 
-func (h Handler) Handle(ctx context.Context, client Client) error {
+func (h Service) ServeClient(ctx context.Context, client Client) error {
 	powCheck, err := h.powCheckFactory(h.difficulty) // TODO maybe use dynamic difficulty based on current load
 	if err != nil {
 		return err
