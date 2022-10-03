@@ -32,10 +32,9 @@ WORKDIR /app
 
 FROM release-base AS release-server
 ENTRYPOINT ["./server"]
-ENV PORT 7777
-EXPOSE $PORT
 COPY --from=build-server /workspace/cmd/server/server ./server
 
 FROM release-base AS release-client
 ENTRYPOINT ["./client"]
+CMD ["--help"]
 COPY --from=build-client /workspace/cmd/client/client ./client

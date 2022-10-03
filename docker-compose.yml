@@ -1,0 +1,15 @@
+version: "3.4"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: build/package/Dockerfile
+      target: release-server
+  client:
+    build:
+      context: .
+      dockerfile: build/package/Dockerfile
+      target: release-client
+    command: ["--server-addr=server:7777"]
+    restart: always
