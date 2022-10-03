@@ -9,11 +9,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
       - name: Test
-        run: DOCKER_BUILDKIT=1 docker build -f build/package/Dockerfile -o test-export --target test-export .
+        uses: docker/build-push-action@v3
+        with:
+          file: build/package/Dockerfile
+          target: test-export
+          outputs: type=local,dest=test-export
 
       - name: Publish coverage report
         uses: codecov/codecov-action@v3
