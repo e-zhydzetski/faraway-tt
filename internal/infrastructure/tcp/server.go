@@ -26,7 +26,7 @@ func StartServer(ctx context.Context, addr string, handler Handler) (*Server, er
 			conn, err := ln.Accept()
 			if err != nil {
 				if ne, ok := err.(net.Error); ok && ne.Timeout() {
-					log.Printf("accept tmp error: %v", err)
+					log.Printf("Accept tmp error: %v", err)
 					continue
 				}
 				return err
@@ -37,8 +37,7 @@ func StartServer(ctx context.Context, addr string, handler Handler) (*Server, er
 				// TODO maybe use another context for in-fly requests
 				err := handler(ctx, c)
 				if err != nil {
-					log.Println(err)
-					_ = c.WriteString("ERROR: " + err.Error())
+					log.Println("Connection handling error:", err)
 				}
 				return nil // always return nil to prevent server stop because of connection handling error
 			})
