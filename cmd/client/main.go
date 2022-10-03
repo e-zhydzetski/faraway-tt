@@ -7,11 +7,11 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/e-zhydzetski/faraway-tt/internal/app"
+	farawaytt "github.com/e-zhydzetski/faraway-tt/pkg"
 )
 
 func errorAwareMain() error {
-	cfg := app.DefaultClientConfig()
+	cfg := farawaytt.DefaultClientConfig()
 	flag.StringVar(&cfg.ServerAddr, "server-addr", cfg.ServerAddr, "server address")
 	flag.Parse()
 
@@ -20,7 +20,7 @@ func errorAwareMain() error {
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 
-	client := app.NewClient(cfg)
+	client := farawaytt.NewClient(cfg)
 	quote, err := client.RequestForQuote(ctx)
 	if err != nil {
 		return err
