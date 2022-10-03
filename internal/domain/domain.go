@@ -6,7 +6,7 @@ type Quoter interface {
 	Quote(ctx context.Context) (string, error)
 }
 
-type POWCheckFactoryFunc func(complexity uint64) (POWCheck, error)
+type POWCheckFactoryFunc func(difficulty uint64) (POWCheck, error)
 
 type POWCheck interface {
 	Challenge() []byte

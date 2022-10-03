@@ -9,8 +9,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func NewBCryptCheck(complexity uint64) (domain.POWCheck, error) {
-	r, err := rand.Int(rand.Reader, big.NewInt(int64(complexity)))
+func NewBCryptCheck(difficulty uint64) (domain.POWCheck, error) {
+	r, err := rand.Int(rand.Reader, big.NewInt(int64(difficulty)))
 	if err != nil {
 		return BCryptCheck{}, err
 	}
