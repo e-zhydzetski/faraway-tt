@@ -6,16 +6,13 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"time"
 
-	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
-
-	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/pow"
+	"github.com/e-zhydzetski/faraway-tt/internal/app"
 )
 
 func errorAwareMain() error {
-	var serverAddr string
-	flag.StringVar(&serverAddr, "server-addr", "127.0.0.1:7777", "server address")
+	cfg := app.DefaultClientConfig()
+	flag.StringVar(&cfg.ServerAddr, "server-addr", cfg.ServerAddr, "server address")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -23,27 +20,8 @@ func errorAwareMain() error {
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 
-	conn, err := tcp.Connect(ctx, serverAddr)
-	if err != nil {
-		return err
-	}
-
-	powChallenge, err := conn.ReadBytes()
-	if err != nil {
-		return err
-	}
-
-	before := time.Now()
-	proof := pow.BCryptProve(powChallenge)
-	duration := time.Since(before)
-	log.Println("POW check duration:", duration)
-
-	err = conn.WriteUint64(proof)
-	if err != nil {
-		return err
-	}
-
-	quote, err := conn.ReadString()
+	client := app.NewClient(cfg)
+	quote, err := client.RequestForQuote(ctx)
 	if err != nil {
 		return err
 	}
