@@ -8,25 +8,20 @@ import (
 	"os/signal"
 	"strconv"
 
-	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/quoter"
-
-	"github.com/e-zhydzetski/faraway-tt/internal/domain"
-	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/pow"
-	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/tcp"
+	"github.com/e-zhydzetski/faraway-tt/internal/app"
 )
 
 func errorAwareMain() error {
-	var listenAddr = ":7777"
+	cfg := app.DefaultServerConfig()
 	if e, present := os.LookupEnv("LISTEN_ADDR"); present {
-		listenAddr = e
+		cfg.ListenAddr = e
 	}
-	var difficulty uint64 = 100
 	if e, present := os.LookupEnv("POW_DIFFICULTY"); present {
 		d, err := strconv.ParseUint(e, 10, 64)
 		if err != nil {
 			return fmt.Errorf("invalid POW_DIFFICULTY value: %v", err)
 		}
-		difficulty = d
+		cfg.Difficulty = d
 	}
 
 	ctx := context.Background()
@@ -34,18 +29,11 @@ func errorAwareMain() error {
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 
-	powCheckFactory := pow.NewBCryptCheck
-	quoterService := quoter.NewQuotableClient()
-
-	service := domain.NewService(powCheckFactory, quoterService, difficulty)
-
-	server, err := tcp.StartServer(ctx, listenAddr, func(ctx context.Context, c *tcp.Connection) error {
-		return service.ServeClient(ctx, c)
-	})
+	server, err := app.StartServer(ctx, cfg)
 	if err != nil {
 		return err
 	}
-	log.Printf("TCP server listenting on port: %d", server.Port())
+	log.Printf("Server listenting on port: %d", server.Port())
 
 	return server.WaitForShutdown()
 }
