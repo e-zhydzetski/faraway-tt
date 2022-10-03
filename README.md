@@ -1,5 +1,7 @@
 # faraway-tt
 
+[![Build Status](https://cloud.drone.io/api/badges/e-zhydzetski/faraway-tt/status.svg)](https://cloud.drone.io/e-zhydzetski/faraway-tt)
+
 ## Task
 
 Design and implement “Word of Wisdom” tcp server.
