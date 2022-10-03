@@ -40,20 +40,24 @@ func (c *client) RequestForQuote(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer conn.Close()
 
 	powChallenge, err := conn.ReadBytes()
 	if err != nil {
 		return "", err
 	}
 
-	proof := func() uint64 {
+	proof, err := func() (uint64, error) {
 		if c.cfg.DebugLog {
 			defer func(start time.Time) {
 				log.Println("POW check duration:", time.Since(start))
 			}(time.Now())
 		}
-		return pow.BCryptProve(powChallenge)
+		return pow.BCryptProve(ctx, powChallenge)
 	}()
+	if err != nil {
+		return "", err
+	}
 
 	err = conn.WriteUint64(proof)
 	if err != nil {

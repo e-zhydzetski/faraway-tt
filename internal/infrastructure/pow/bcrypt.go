@@ -1,6 +1,7 @@
 package pow
 
 import (
+	"context"
 	"crypto/rand"
 	"math/big"
 
@@ -37,12 +38,18 @@ func (b BCryptCheck) Verify(proof uint64) bool {
 	return b.answer == proof
 }
 
-func BCryptProve(input []byte) uint64 {
+func BCryptProve(ctx context.Context, input []byte) (uint64, error) {
 	var x uint64
 	for {
+		select {
+		case <-ctx.Done():
+			return 0, ctx.Err()
+		default:
+		}
+		// TODO maybe calculate several hashes between context checks
 		err := bcrypt.CompareHashAndPassword(input, big.NewInt(int64(x)).Bytes())
 		if err == nil {
-			return x
+			return x, nil
 		}
 		x++
 	}
