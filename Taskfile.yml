@@ -17,6 +17,6 @@ tasks:
   docker-build-client:
     cmds:
       - docker build -f build/package/Dockerfile --rm --target release-client -t faraway-tt/client .
-  docker-compose-demo:
+  demo:
     cmds:
       - docker-compose up --build --scale server=2 --scale client=2
