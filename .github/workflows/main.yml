@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Lint
+        uses: docker/build-push-action@v3
+        with:
+          file: build/package/Dockerfile
+          target: lint
+
       - name: Test
         uses: docker/build-push-action@v3
         with:
