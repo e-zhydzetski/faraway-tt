@@ -17,6 +17,7 @@ As a first implementation of POW verification algorithm I chose bruteforce of [b
 * embedded salt, convenient
 * configurable computational complexity
 * popular, implementations are available for any lang
+
 Desired key is a non-negative integer number, right border is unknown for a client. So client should iterate keys from zero to success.  
 At the server side, right border used as a difficulty level.  
 Currently, key is a crypto random number in `[0;difficulty)`
