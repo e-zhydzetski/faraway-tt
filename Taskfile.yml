@@ -11,3 +11,9 @@ tasks:
     deps: [test]
     cmds:
       - go tool cover -func cover.out
+  docker-build-server:
+    cmds:
+      - docker build -f build/package/Dockerfile --rm --target release-server -t faraway-tt/server .
+  docker-build-client:
+    cmds:
+      - docker build -f build/package/Dockerfile --rm --target release-client -t faraway-tt/client .
