@@ -16,7 +16,6 @@ jobs:
         with:
           file: build/package/Dockerfile
           target: lint
-          outputs: /dev/null
 
       - name: Test
         uses: docker/build-push-action@v3
