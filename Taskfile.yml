@@ -6,7 +6,7 @@ tasks:
       - golangci-lint.exe run --fix
   test:
     cmds:
-      - go test -coverpkg=./... -coverprofile cover.out -covermode=atomic ./...
+      - go test -coverpkg=./... -coverprofile=cover.out -covermode=atomic ./...
   coverage:
     deps: [test]
     cmds:

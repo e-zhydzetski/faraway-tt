@@ -12,8 +12,11 @@ COPY --from=src /workspace ./
 RUN golangci-lint run
 
 FROM src AS test
-RUN go test -coverpkg=./... -coverprofile cover.out -covermode=atomic ./... \
+RUN go test -coverpkg=./... -coverprofile=cover.out -covermode=atomic ./... \
     && go tool cover -func cover.out
+
+FROM scratch AS test-export
+COPY --from=test /workspace/cover.out /
 
 FROM src AS build-server
 RUN cd cmd/server && GOOS=linux GOARCH=amd64 go build -ldflags "-w -s" -o server

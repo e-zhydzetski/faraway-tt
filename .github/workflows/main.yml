@@ -1,0 +1,23 @@
+name: main
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: test
+        run: DOCKER_BUILDKIT=1 docker build -f build/package/Dockerfile -o test-export --target test-export .
+
+      - name: publish coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./test-export/cover.out
+          fail_ci_if_error: true
+          verbose: true
