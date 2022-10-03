@@ -1,5 +1,6 @@
 FROM golang:1.19.1-alpine3.16 AS src
 RUN apk update && apk add --no-cache git
+ENV CGO_ENABLED=0
 WORKDIR /workspace
 COPY go.mod go.sum ./
 RUN go mod download
@@ -11,13 +12,14 @@ COPY --from=src /workspace ./
 RUN golangci-lint run
 
 FROM src AS test
-RUN CGO_ENABLED=0 go test ./... -coverprofile cover.out && go tool cover -func cover.out
+RUN go test -coverpkg=./... -coverprofile cover.out -covermode=atomic ./... \
+    && go tool cover -func cover.out
 
 FROM src AS build-server
-RUN cd cmd/server && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-w -s" -o server
+RUN cd cmd/server && GOOS=linux GOARCH=amd64 go build -ldflags "-w -s" -o server
 
 FROM src AS build-client
-RUN cd cmd/client && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-w -s" -o client
+RUN cd cmd/client && GOOS=linux GOARCH=amd64 go build -ldflags "-w -s" -o client
 
 FROM alpine:3.16.2 AS release-base
 ARG CACHEBUST
