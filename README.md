@@ -1,6 +1,7 @@
 # faraway-tt
 
-[![Build Status](https://cloud.drone.io/api/badges/e-zhydzetski/faraway-tt/status.svg)](https://cloud.drone.io/e-zhydzetski/faraway-tt)
+![Main Build Status](https://github.com/e-zhydzetski/faraway-tt/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/e-zhydzetski/faraway-tt/branch/master/graph/badge.svg?token=Z7IWED0VRR)](https://codecov.io/gh/e-zhydzetski/faraway-tt)
 
 ## Task
 

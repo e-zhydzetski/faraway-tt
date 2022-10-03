@@ -12,13 +12,34 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: test
+      - name: Test
         run: DOCKER_BUILDKIT=1 docker build -f build/package/Dockerfile -o test-export --target test-export .
 
-      - name: publish coverage report
+      - name: Publish coverage report
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./test-export/cover.out
           fail_ci_if_error: true
-          verbose: true
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and publish server
+        uses: docker/build-push-action@v3
+        with:
+          file: build/package/Dockerfile
+          target: release-server
+          tags: zhydzetski/faraway-tt-server:latest
+          push: true
+
+      - name: Build and publish client
+        uses: docker/build-push-action@v3
+        with:
+          file: build/package/Dockerfile
+          target: release-client
+          tags: zhydzetski/faraway-tt-client:latest
+          push: true
