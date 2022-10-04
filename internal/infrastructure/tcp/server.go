@@ -32,10 +32,10 @@ func StartServer(ctx context.Context, addr string, handler Handler) (*Server, er
 				return err
 			}
 			g.Go(func() error { // start inside errgroup to wait all in-fly connections after shutdown
-				defer conn.Close()
-				c := NewConnection(conn)
-				// TODO maybe use another context for in-fly requests
-				err := handler(ctx, c)
+				// TODO maybe use another base context for in-fly requests
+				conn, connCtx, cancel := wrapConnectionWithContext(conn, ctx)
+				defer cancel()
+				err := handler(connCtx, NewConnection(conn))
 				if err != nil {
 					log.Println("Connection handling error:", err)
 				}

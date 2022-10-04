@@ -4,18 +4,15 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"net"
 )
 
-func NewConnection(conn net.Conn) *Connection {
+func NewConnection(conn baseConn) *Connection {
 	return &Connection{conn: conn}
 }
 
 type Connection struct {
-	conn net.Conn
+	conn baseConn
 }
-
-// Transport level methods
 
 func (c *Connection) WriteUint64(data uint64) error {
 	b := make([]byte, 8)
