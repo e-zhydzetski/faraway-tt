@@ -39,7 +39,10 @@ func TestServerCtxCancel(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		_, err = tcp.Connect(ctx, fmt.Sprintf("127.0.0.1:%d", server.Port()))
+		clientCtx, clientCancel := context.WithCancel(context.Background())
+		defer clientCancel()
+
+		_, err = tcp.Connect(clientCtx, fmt.Sprintf("127.0.0.1:%d", server.Port()))
 		require.NoError(t, err)
 		cancel()
 
@@ -63,6 +66,34 @@ func TestServerConnectionClose(t *testing.T) {
 
 		_, err = tcp.Connect(ctx, fmt.Sprintf("127.0.0.1:%d", server.Port()))
 		require.NoError(t, err)
+
+		<-done
+		cancel()
+
+		_ = server.WaitForShutdown()
+	})(t)
+}
+
+func TestClientCtxCancel(t *testing.T) {
+	WithTimeout(time.Second, func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		done := make(chan struct{})
+		server, err := tcp.StartServer(ctx, ":0", func(ctx context.Context, c *tcp.Connection) error {
+			_, err := c.ReadUint64()
+			require.ErrorContains(t, err, "EOF")
+			close(done)
+			return err
+		})
+		require.NoError(t, err)
+
+		clientCtx, clientCancel := context.WithCancel(context.Background())
+		defer clientCancel()
+
+		_, err = tcp.Connect(clientCtx, fmt.Sprintf("127.0.0.1:%d", server.Port()))
+		require.NoError(t, err)
+		clientCancel()
 
 		<-done
 		cancel()
