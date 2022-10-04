@@ -8,10 +8,16 @@ import (
 	"os/signal"
 	"strconv"
 
+	"github.com/e-zhydzetski/faraway-tt/internal/infrastructure/debug"
+
 	"github.com/e-zhydzetski/faraway-tt/internal/app"
 )
 
 func errorAwareMain() error {
+	if debugAddr, present := os.LookupEnv("DEBUG_ADDR"); present {
+		debug.StartServerAsync(debugAddr)
+	}
+
 	cfg := app.DefaultServerConfig()
 	if e, present := os.LookupEnv("LISTEN_ADDR"); present {
 		cfg.ListenAddr = e
@@ -33,7 +39,7 @@ func errorAwareMain() error {
 	if err != nil {
 		return err
 	}
-	log.Printf("Server listenting on port: %d", server.Port())
+	log.Printf("Server listening on: %d", server.Port())
 
 	return server.WaitForShutdown()
 }

@@ -9,6 +9,9 @@ services:
     environment:
       LISTEN_ADDR: ":7777"
       POW_DIFFICULTY: 100
+      DEBUG_ADDR: ":8000"
+    ports:
+      - "8000-8005:8000"
     restart: on-failure
   client:
     build:
