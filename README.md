@@ -1,7 +1,10 @@
 # faraway-tt
 
 [![Main Build Status](https://github.com/e-zhydzetski/faraway-tt/actions/workflows/main.yml/badge.svg)](https://github.com/e-zhydzetski/faraway-tt/actions/workflows/main.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/e-zhydzetski/faraway-tt)](https://goreportcard.com/report/github.com/e-zhydzetski/faraway-tt)
 [![codecov](https://codecov.io/gh/e-zhydzetski/faraway-tt/branch/master/graph/badge.svg?token=Z7IWED0VRR)](https://codecov.io/gh/e-zhydzetski/faraway-tt)
+[![Docker server](https://img.shields.io/docker/pulls/zhydzetski/faraway-tt-server?label=docker%20pulls%20server)](https://hub.docker.com/r/zhydzetski/faraway-tt-server)
+[![Docker client](https://img.shields.io/docker/pulls/zhydzetski/faraway-tt-client?label=docker%20pulls%20client)](https://hub.docker.com/r/zhydzetski/faraway-tt-client)
 
 ## Task
 
