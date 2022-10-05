@@ -29,7 +29,9 @@ func (h Service) ServeClient(ctx context.Context, client Client) error {
 	if err != nil {
 		return err
 	}
-	proof, err := client.ReadUint64()
+	checkCtx, cancel := context.WithTimeout(ctx, powCheck.ReasonableTimeout())
+	defer cancel()
+	proof, err := client.ReadUint64(checkCtx)
 	if err != nil {
 		return err
 	}

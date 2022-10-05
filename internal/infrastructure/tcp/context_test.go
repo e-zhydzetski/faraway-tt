@@ -33,7 +33,7 @@ func TestServerCtxCancel(t *testing.T) {
 		defer cancel()
 
 		server, err := tcp.StartServer(ctx, ":0", func(ctx context.Context, c *tcp.Connection) error {
-			_, err := c.ReadUint64() // wait forever
+			_, err := c.ReadUint64(ctx) // wait forever
 			require.ErrorContains(t, err, "use of closed network connection")
 			return err
 		})
@@ -81,7 +81,7 @@ func TestClientCtxCancel(t *testing.T) {
 
 		done := make(chan struct{})
 		server, err := tcp.StartServer(ctx, ":0", func(ctx context.Context, c *tcp.Connection) error {
-			_, err := c.ReadUint64()
+			_, err := c.ReadUint64(ctx)
 			require.ErrorContains(t, err, "EOF")
 			close(done)
 			return err

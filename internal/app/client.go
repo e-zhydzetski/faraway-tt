@@ -42,7 +42,7 @@ func (c *client) RequestForQuote(ctx context.Context) (string, error) {
 	}
 	defer conn.Close()
 
-	powChallenge, err := conn.ReadBytes()
+	powChallenge, err := conn.ReadBytes(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -64,7 +64,7 @@ func (c *client) RequestForQuote(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	quote, err := conn.ReadString()
+	quote, err := conn.ReadString(ctx)
 	if err != nil {
 		return "", err
 	}

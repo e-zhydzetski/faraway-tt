@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"context"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -21,7 +22,11 @@ func (c *Connection) WriteUint64(data uint64) error {
 	return err
 }
 
-func (c *Connection) ReadUint64() (uint64, error) {
+func (c *Connection) ReadUint64(ctx context.Context) (uint64, error) {
+	go func() {
+		<-ctx.Done()
+		_ = c.Close()
+	}()
 	b := make([]byte, 8)
 	n, err := c.conn.Read(b)
 	if err != nil {
@@ -44,8 +49,12 @@ func (c *Connection) WriteBytes(data []byte) error {
 
 const maxBufferSize = 4096
 
-func (c *Connection) ReadBytes() ([]byte, error) {
-	l, err := c.ReadUint64()
+func (c *Connection) ReadBytes(ctx context.Context) ([]byte, error) {
+	go func() {
+		<-ctx.Done()
+		_ = c.Close()
+	}()
+	l, err := c.ReadUint64(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +76,8 @@ func (c *Connection) WriteString(data string) error {
 	return c.WriteBytes([]byte(data))
 }
 
-func (c *Connection) ReadString() (string, error) {
-	b, err := c.ReadBytes()
+func (c *Connection) ReadString(ctx context.Context) (string, error) {
+	b, err := c.ReadBytes(ctx)
 	if err != nil {
 		return "", err
 	}

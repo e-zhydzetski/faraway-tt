@@ -35,15 +35,15 @@ func TestConnection(t *testing.T) {
 	c, err := tcp.Connect(ctx, fmt.Sprintf("127.0.0.1:%d", server.Port()))
 	require.NoError(t, err)
 
-	b, err := c.ReadBytes()
+	b, err := c.ReadBytes(ctx)
 	require.NoError(t, err)
 	require.Equal(t, testBytes, b)
 
-	s, err := c.ReadString()
+	s, err := c.ReadString(ctx)
 	require.NoError(t, err)
 	require.Equal(t, testString, s)
 
-	u, err := c.ReadUint64()
+	u, err := c.ReadUint64(ctx)
 	require.NoError(t, err)
 	require.Equal(t, testUint64, u)
 
